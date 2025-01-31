@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Mic, MicOff, Send } from "lucide-react";
 import axios from "axios";
 import { UltravoxSession } from "ultravox-client";
@@ -16,7 +16,7 @@ export function VoiceAssistant({
 }: VoiceAssistantProps) {
   const [isListening, setIsListening] = useState(false);
   const [message, setMessage] = useState("");
-  const [wss, setwss] = useState<string | undefined>();
+  const session = new UltravoxSession();
 
   // Toggle local listening state
   const toggleVoice = () => {
@@ -28,27 +28,22 @@ export function VoiceAssistant({
     }
   };
 
-  
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // Handle message submission
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement> | string) => {
+    if (typeof e !== "string") {
+      e.preventDefault(); // Prevent form submission if event is passed
+    }
+
     if (message.trim()) {
-      onMessageSend?.(message);
-      setMessage("");
+      session.sendText(message); // Send the message
+      setMessage(""); // Clear input after sending
+      onMessageSend?.(message); // Call optional callback
     }
   };
-
-  // Fetch the WebSocket URL on mount
-  // useEffect(() => {
-
-  // }, []);
-
-  // Create a new Ultravox session
-  const session = new UltravoxSession();
 
   // Handle mic button click
   const handleMicClick = async () => {
     try {
-      // 1. Make the POST request and capture the response.
       const response = await axios.post(
         "https://xjs6k34l-8000.inc1.devtunnels.ms/api/start-ultravox/",
         {
@@ -58,19 +53,16 @@ export function VoiceAssistant({
         }
       );
 
-      // 2. Get the WebSocket URL from the response.
       const wssUrl = response.data.joinUrl;
       console.log("Mic button clicked!", wssUrl);
 
-      // 3. Use that URL to join the call, if it exists.
       if (wssUrl) {
-        session.joinCall(wssUrl); // Make sure 'session' is defined elsewhere
+        session.joinCall(wssUrl);
       } else {
         console.error("WebSocket URL is not set");
       }
 
-      // 4. Toggle the voice or do any other post-call setup/teardown.
-      toggleVoice(); // Make sure 'toggleVoice' is defined elsewhere
+      toggleVoice();
     } catch (error) {
       console.error("Error in handleMicClick:", error);
     }
@@ -79,11 +71,8 @@ export function VoiceAssistant({
   return (
     <div className="voice-assistant">
       <div className="voice-assistant-inner">
-        {/* Enhanced floating particles with more variety */}
-        <div
-          className="particles"
-          style={{ pointerEvents: "none" }} // <--- No click blocking
-        >
+        {/* Floating particles */}
+        <div className="particles" style={{ pointerEvents: "none" }}>
           {[...Array(30)].map((_, i) => (
             <div
               key={i}
@@ -99,6 +88,7 @@ export function VoiceAssistant({
           ))}
         </div>
 
+        {/* Voice Orb */}
         <div className="voice-orb-container">
           <div className={`voice-orb ${isListening ? "listening" : ""}`}>
             {/* Orb rings */}
@@ -119,8 +109,8 @@ export function VoiceAssistant({
               aria-label="Toggle voice input"
               style={{
                 position: "relative",
-                zIndex: 10, // <--- Ensure the button is on top
-                pointerEvents: "auto", // <--- Allow clicks
+                zIndex: 10,
+                pointerEvents: "auto",
               }}
             >
               {isListening ? (
@@ -132,16 +122,10 @@ export function VoiceAssistant({
           </div>
 
           {/* Glow effect */}
-          <div
-            className="glow-effect"
-            style={{ pointerEvents: "none" }} // <--- No click blocking
-          />
+          <div className="glow-effect" style={{ pointerEvents: "none" }} />
 
           {/* Aurora lines */}
-          <div
-            className="aurora-lines"
-            style={{ pointerEvents: "none" }} // <--- No click blocking
-          >
+          <div className="aurora-lines" style={{ pointerEvents: "none" }}>
             {[...Array(8)].map((_, i) => (
               <div
                 key={i}
@@ -158,10 +142,7 @@ export function VoiceAssistant({
           </div>
 
           {/* Energy field */}
-          <div
-            className="energy-field"
-            style={{ pointerEvents: "none" }} // <--- No click blocking
-          >
+          <div className="energy-field" style={{ pointerEvents: "none" }}>
             {[...Array(12)].map((_, i) => (
               <div
                 key={i}
@@ -177,17 +158,23 @@ export function VoiceAssistant({
           </div>
         </div>
 
-        {/* Interaction elements */}
+        {/* Interaction Elements */}
         <div className="interaction-container">
           <div className={`transcription-box ${isListening ? "active" : ""}`}>
             {isListening ? "Listening..." : "Click the mic to start"}
           </div>
 
+          {/* Message Form */}
           <form onSubmit={handleSubmit} className="message-form">
             <input
               type="text"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSubmit(e);
+                }
+              }}
               placeholder="Type your message..."
               className="message-input"
             />
