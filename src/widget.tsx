@@ -16,7 +16,7 @@ class ReactWidget extends HTMLElement {
       const container = document.createElement('div');
       const link = document.createElement('link');
       link.rel = 'stylesheet';
-      link.href = 'https://widget-aivideo2.vercel.app/style.css'; // Replace with the actual path to your generated CSS file
+      link.href = 'https://widgetuv.vercel.app/react-widget.css';
   
       // Append the stylesheet and container to the Shadow DOM
       this.shadowRoot?.appendChild(link);

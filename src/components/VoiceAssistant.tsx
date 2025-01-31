@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Mic, MicOff, Send } from "lucide-react";
 import axios from "axios";
 import { UltravoxSession } from "ultravox-client";
+import { useWidgetContext } from "../constexts/WidgetContext";
 
 interface VoiceAssistantProps {
   onMessageSend?: (message: string) => void;
@@ -16,6 +17,7 @@ export function VoiceAssistant({
 }: VoiceAssistantProps) {
   const [isListening, setIsListening] = useState(false);
   const [message, setMessage] = useState("");
+  const { agent_id, schema } = useWidgetContext();
   const session = new UltravoxSession();
 
   // Toggle local listening state
@@ -45,11 +47,10 @@ export function VoiceAssistant({
   const handleMicClick = async () => {
     try {
       const response = await axios.post(
-        "https://xjs6k34l-8000.inc1.devtunnels.ms/api/start-ultravox/",
+        "https://app.snowie.ai/api/start-ultravox/",
         {
-          agent_code: "6a3d9ea6-cb58-461e-8996-09e7e3a28686",
-          schema_name: "0c133d26-972a-47ea-8050-51a943f2d1d0",
-          voice_name: "Om",
+          agent_code: agent_id,
+          schema_name: schema,
         }
       );
 
