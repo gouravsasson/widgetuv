@@ -5,7 +5,7 @@ import { UltravoxSession } from "ultravox-client";
 import { useWidgetContext } from "../constexts/WidgetContext";
 
 export function VoiceAssistant() {
-  const [isListening, setIsListening] = useState(false);
+  const [isListening, setIsListening] = useState(null);
   const [transcripts, setTranscripts] = useState(null);
   const [status, setStatus] = useState(null);
   const [message, setMessage] = useState("");
@@ -23,9 +23,12 @@ export function VoiceAssistant() {
 
   // Handle message submission
   const handleSubmit = () => {
+    console.log(status);
     console.log(message);
 
-    session.sendText(`${message}`);
+    if (status != "disconnected") {
+      session.sendText(`${message}`);
+    }
   };
 
   // Handle mic button click
@@ -51,6 +54,7 @@ export function VoiceAssistant() {
         toggleVoice(true);
       } else {
         await session.leaveCall();
+        setTranscripts(null);
         toggleVoice(false);
       }
     } catch (error) {
@@ -59,7 +63,7 @@ export function VoiceAssistant() {
   };
 
   session.addEventListener("transcripts", (event) => {
-    console.log("Transcripts updated: ", session.transcripts);
+    console.log("Transcripts updated: ", session);
 
     const alltrans = session.transcripts;
 
@@ -78,6 +82,7 @@ export function VoiceAssistant() {
 
   // Listen for status changing events
   session.addEventListener("status", (event) => {
+    setStatus(session.status);
     console.log("Session status changed: ", session.status);
   });
 
