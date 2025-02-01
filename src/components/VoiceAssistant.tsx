@@ -4,19 +4,10 @@ import axios from "axios";
 import { UltravoxSession } from "ultravox-client";
 import { useWidgetContext } from "../constexts/WidgetContext";
 
-interface VoiceAssistantProps {
-  onMessageSend?: (message: string) => void;
-  onVoiceStart?: () => void;
-  onVoiceStop?: () => void;
-}
-
-export function VoiceAssistant({
-  onMessageSend,
-  onVoiceStart,
-  onVoiceStop,
-}: VoiceAssistantProps) {
+export function VoiceAssistant() {
   const [isListening, setIsListening] = useState(false);
-  const [transcripts, setTranscripts] = useState();
+  const [transcripts, setTranscripts] = useState(null);
+  const [status, setStatus] = useState(null);
   const [message, setMessage] = useState("");
 
   const { agent_id, schema } = useWidgetContext();
@@ -26,43 +17,42 @@ export function VoiceAssistant({
   const session = new UltravoxSession();
 
   // Toggle local listening state
-  const toggleVoice = () => {
-    setIsListening(!isListening);
-    if (!isListening) {
-      onVoiceStart?.();
-    } else {
-      onVoiceStop?.();
-    }
+  const toggleVoice = (data) => {
+    setIsListening(data);
   };
 
   // Handle message submission
   const handleSubmit = () => {
     console.log(message);
 
-    session.sendText("gourav");
+    session.sendText(`${message}`);
   };
 
   // Handle mic button click
   const handleMicClick = async () => {
     try {
-      const response = await axios.post(
-        "https://app.snowie.ai/api/start-ultravox/",
-        {
-          agent_code: agent_id,
-          schema_name: schema,
+      if (!isListening) {
+        const response = await axios.post(
+          "https://app.snowie.ai/api/start-ultravox/",
+          {
+            agent_code: agent_id,
+            schema_name: schema,
+          }
+        );
+
+        const wssUrl = response.data.joinUrl;
+        console.log("Mic button clicked!", wssUrl);
+
+        if (wssUrl) {
+          session.joinCall(wssUrl);
+        } else {
+          console.error("WebSocket URL is not set");
         }
-      );
-
-      const wssUrl = response.data.joinUrl;
-      console.log("Mic button clicked!", wssUrl);
-
-      if (wssUrl) {
-        session.joinCall(wssUrl);
+        toggleVoice(true);
       } else {
-        console.error("WebSocket URL is not set");
+        await session.leaveCall();
+        toggleVoice(false);
       }
-
-      toggleVoice();
     } catch (error) {
       console.error("Error in handleMicClick:", error);
     }
@@ -71,23 +61,17 @@ export function VoiceAssistant({
   session.addEventListener("transcripts", (event) => {
     console.log("Transcripts updated: ", session.transcripts);
 
-    // Get all transcripts from the session
     const alltrans = session.transcripts;
 
-    // Initialize a variable to hold the concatenated transcripts
-    let combinedTrans = "";
+    let Trans = "";
 
-    // Loop through each transcript in the array
     for (let index = 0; index < alltrans.length; index++) {
-      // Assuming each transcript has a 'text' or similar property
       const currentTranscript = alltrans[index];
 
-      // Append the text to our running string
-      combinedTrans = currentTranscript.text;
+      Trans = currentTranscript.text;
 
-      // If this transcript is marked as final, we update our state or variable
       if (currentTranscript) {
-        setTranscripts(combinedTrans);
+        setTranscripts(Trans);
       }
     }
   });
@@ -188,29 +172,34 @@ export function VoiceAssistant({
         </div>
 
         {/* Interaction Elements */}
-        <div className="interaction-container">
+        <div className="interaction-container w-[300px]">
           <div className={`transcription-box ${isListening ? "active" : ""}`}>
             {/* {isListening ? "Listening..." : "Click the mic to start"} */}
             {transcripts}
           </div>
 
           {/* Message Form */}
-
-          <input
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleSubmit(e.target.value);
-              }
-            }}
-            placeholder="Type your message..."
-            className="message-input"
-          />
-          <button type="button" onClick={handleSubmit} className="send-button">
-            <Send className="send-icon" />
-          </button>
+          <div className=" flex gap-3">
+            <input
+              type="text"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSubmit(e.target.value);
+                }
+              }}
+              placeholder="Type your message..."
+              className="message-input"
+            />
+            <button
+              type="button"
+              onClick={handleSubmit}
+              className="send-button"
+            >
+              <Send className="send-icon" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
