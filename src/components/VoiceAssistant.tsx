@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Mic, MicOff, Send } from "lucide-react";
 import axios from "axios";
 import { UltravoxSession } from "ultravox-client";
@@ -16,8 +16,13 @@ export function VoiceAssistant({
   onVoiceStop,
 }: VoiceAssistantProps) {
   const [isListening, setIsListening] = useState(false);
+  const [transcripts, setTranscripts] = useState();
   const [message, setMessage] = useState("");
+
   const { agent_id, schema } = useWidgetContext();
+  // const agent_id = "92242812-bc5a-40c3-adae-e8e5f2e56ad9";
+  // const schema = "6af30ad4-a50c-4acc-8996-d5f562b6987f";
+
   const session = new UltravoxSession();
 
   // Toggle local listening state
@@ -31,16 +36,10 @@ export function VoiceAssistant({
   };
 
   // Handle message submission
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement> | string) => {
-    if (typeof e !== "string") {
-      e.preventDefault(); // Prevent form submission if event is passed
-    }
+  const handleSubmit = () => {
+    console.log(message);
 
-    if (message.trim()) {
-      session.sendText(message); // Send the message
-      setMessage(""); // Clear input after sending
-      onMessageSend?.(message); // Call optional callback
-    }
+    session.sendText("gourav");
   };
 
   // Handle mic button click
@@ -68,6 +67,35 @@ export function VoiceAssistant({
       console.error("Error in handleMicClick:", error);
     }
   };
+
+  session.addEventListener("transcripts", (event) => {
+    console.log("Transcripts updated: ", session.transcripts);
+
+    // Get all transcripts from the session
+    const alltrans = session.transcripts;
+
+    // Initialize a variable to hold the concatenated transcripts
+    let combinedTrans = "";
+
+    // Loop through each transcript in the array
+    for (let index = 0; index < alltrans.length; index++) {
+      // Assuming each transcript has a 'text' or similar property
+      const currentTranscript = alltrans[index];
+
+      // Append the text to our running string
+      combinedTrans = currentTranscript.text;
+
+      // If this transcript is marked as final, we update our state or variable
+      if (currentTranscript) {
+        setTranscripts(combinedTrans);
+      }
+    }
+  });
+
+  // Listen for status changing events
+  session.addEventListener("status", (event) => {
+    console.log("Session status changed: ", session.status);
+  });
 
   return (
     <div className="voice-assistant">
@@ -162,27 +190,27 @@ export function VoiceAssistant({
         {/* Interaction Elements */}
         <div className="interaction-container">
           <div className={`transcription-box ${isListening ? "active" : ""}`}>
-            {isListening ? "Listening..." : "Click the mic to start"}
+            {/* {isListening ? "Listening..." : "Click the mic to start"} */}
+            {transcripts}
           </div>
 
           {/* Message Form */}
-          <form onSubmit={handleSubmit} className="message-form">
-            <input
-              type="text"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleSubmit(e);
-                }
-              }}
-              placeholder="Type your message..."
-              className="message-input"
-            />
-            <button type="submit" className="send-button">
-              <Send className="send-icon" />
-            </button>
-          </form>
+
+          <input
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSubmit(e.target.value);
+              }
+            }}
+            placeholder="Type your message..."
+            className="message-input"
+          />
+          <button type="button" onClick={handleSubmit} className="send-button">
+            <Send className="send-icon" />
+          </button>
         </div>
       </div>
     </div>
