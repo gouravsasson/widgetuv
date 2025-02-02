@@ -95,7 +95,7 @@ export function VoiceAssistant() {
 
   return (
     <div className="voice-assistant">
-      <div className="voice-assistant-inner">
+      <div className=" voice-assistant-inner">
         {/* Floating particles */}
         <div className="particles" style={{ pointerEvents: "none" }}>
           {[...Array(30)].map((_, i) => (
@@ -114,7 +114,7 @@ export function VoiceAssistant() {
         </div>
 
         {/* Voice Orb */}
-        <div className="voice-orb-container">
+        <div className=" w-full  voice-orb-container">
           <div className={`voice-orb ${isListening ? "listening" : ""}`}>
             {/* Orb rings */}
             <div className="orb-rings" style={{ pointerEvents: "none" }}>
@@ -184,7 +184,7 @@ export function VoiceAssistant() {
         </div>
 
         {/* Interaction Elements */}
-        <div className="interaction-container w-[300px]">
+        <div className="interaction-container ">
           <div className={`transcription-box ${isListening ? "active" : ""}`}>
             {/* {isListening ? "Listening..." : "Click the mic to start"} */}
             {transcripts}

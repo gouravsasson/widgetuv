@@ -7,7 +7,7 @@
   }
 
   .voice-assistant-inner {
-    @apply flex items-center gap-8 p-8 rounded-[2rem] relative overflow-hidden;
+    @apply  items-center gap-8 p-8 rounded-[2rem] relative overflow-hidden sm:flex;
     background: linear-gradient(165deg, 
       rgba(255, 255, 255, 0.08) 0%,
       rgba(16, 185, 129, 0.08) 50%,
@@ -200,7 +200,7 @@
   }
 
   .interaction-container {
-    @apply flex flex-col gap-4 min-w-[300px];
+    @apply flex flex-col gap-4 w-[213px] sm:w-[300px];
     transform-style: preserve-3d;
   }
 
@@ -261,13 +261,13 @@
   }
 
   .message-form {
-    @apply flex items-center gap-2 w-full;
+    @apply flex items-center;
     perspective: 1200px;
     transform: translateZ(20px);
   }
 
   .message-input {
-    @apply flex-1 px-4 py-3 rounded-xl text-emerald-300 placeholder-emerald-700/50 text-sm border border-emerald-500/35;
+    @apply w-[152.6px]  px-4 py-3 rounded-xl text-emerald-300 placeholder-emerald-700/50 text-sm border border-emerald-500/35 sm:w-fit;
     background: linear-gradient(145deg,
       rgba(255, 255, 255, 0.08),
       rgba(16, 185, 129, 0.08)
@@ -281,7 +281,7 @@
   }
 
   .message-input:focus {
-    @apply outline-none border-emerald-400/55;
+    @apply w-[164.6] outline-none border-emerald-400/55;
     background: linear-gradient(145deg,
       rgba(16, 185, 129, 0.25),
       rgba(16, 185, 129, 0.1)
