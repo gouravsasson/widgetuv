@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Mic, MicOff, Send } from "lucide-react";
 import axios from "axios";
 import { UltravoxSession } from "ultravox-client";
@@ -14,7 +14,12 @@ export function VoiceAssistant() {
   // const agent_id = "92242812-bc5a-40c3-adae-e8e5f2e56ad9";
   // const schema = "6af30ad4-a50c-4acc-8996-d5f562b6987f";
 
-  const session = new UltravoxSession();
+  const sessionRef = useRef<UltravoxSession | null>(null);
+  if (!sessionRef.current) {
+    sessionRef.current = new UltravoxSession();
+  }
+
+  const session = sessionRef.current;
 
   // Toggle local listening state
   const toggleVoice = (data) => {
@@ -28,6 +33,7 @@ export function VoiceAssistant() {
 
     if (status != "disconnected") {
       session.sendText(`${message}`);
+      setMessage("");
     }
   };
 
@@ -54,6 +60,7 @@ export function VoiceAssistant() {
         toggleVoice(true);
       } else {
         await session.leaveCall();
+        console.log("Call left successfully");
         setTranscripts(null);
         toggleVoice(false);
       }
