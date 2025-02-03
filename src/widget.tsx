@@ -43,4 +43,4 @@ class ReactWidget extends HTMLElement {
   }
 }
 
-customElements.define("react-widget", ReactWidget);
+customElements.define("react-widget-uv", ReactWidget);
