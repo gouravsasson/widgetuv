@@ -13,7 +13,7 @@ export function VoiceAssistant() {
   const [callsessionid, setcallsessionid] = useState("");
 
   const { agent_id, schema } = useWidgetContext();
-  const baseurl = "https://xjs6k34l-8000.inc1.devtunnels.ms";
+  const baseurl = "https://app.snowie.ai";
   // const agent_id = "6a3d9ea6-cb58-461e-8996-09e7e3a28686";
   // const schema = "0c133d26-972a-47ea-8050-51a943f2d1d0";
 
