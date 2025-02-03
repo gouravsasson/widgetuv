@@ -9,10 +9,13 @@ export function VoiceAssistant() {
   const [transcripts, setTranscripts] = useState(null);
   const [status, setStatus] = useState(null);
   const [message, setMessage] = useState("");
+  const [callid, setcallid] = useState("");
+  const [callsessionid, setcallsessionid] = useState("");
 
   const { agent_id, schema } = useWidgetContext();
-  // const agent_id = "92242812-bc5a-40c3-adae-e8e5f2e56ad9";
-  // const schema = "6af30ad4-a50c-4acc-8996-d5f562b6987f";
+  const baseurl = "https://xjs6k34l-8000.inc1.devtunnels.ms";
+  // const agent_id = "6a3d9ea6-cb58-461e-8996-09e7e3a28686";
+  // const schema = "0c133d26-972a-47ea-8050-51a943f2d1d0";
 
   const sessionRef = useRef<UltravoxSession | null>(null);
   if (!sessionRef.current) {
@@ -41,15 +44,14 @@ export function VoiceAssistant() {
   const handleMicClick = async () => {
     try {
       if (!isListening) {
-        const response = await axios.post(
-          "https://app.snowie.ai/api/start-ultravox/",
-          {
-            agent_code: agent_id,
-            schema_name: schema,
-          }
-        );
+        const response = await axios.post(`${baseurl}/api/start-ultravox/`, {
+          agent_code: agent_id,
+          schema_name: schema,
+        });
 
         const wssUrl = response.data.joinUrl;
+        setcallid(response.data.callId);
+        setcallsessionid(response.data.call_session_id);
         console.log("Mic button clicked!", wssUrl);
 
         if (wssUrl) {
@@ -60,6 +62,15 @@ export function VoiceAssistant() {
         toggleVoice(true);
       } else {
         await session.leaveCall();
+        const response = await axios.post(
+          `${baseurl}/api/end-call-session-ultravox/`,
+          {
+            call_session_id: callsessionid,
+            call_id: callid,
+            schema_name: schema,
+          }
+        );
+
         console.log("Call left successfully");
         setTranscripts(null);
         toggleVoice(false);
