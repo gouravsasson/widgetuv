@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useWidgetContext } from "./constexts/WidgetContext";
 import { useUltravoxStore } from "./store/ultrasession";
 import useSessionStore from "./store/session";
+import axios from "axios";
 
 function App() {
   const [showPopup, setShowPopup] = useState(false);
@@ -69,7 +70,6 @@ function App() {
     });
     setTranscripts(null);
     setIsListening(false);
-
     setShowPopup(false);
   };
 
