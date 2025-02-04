@@ -3,24 +3,36 @@ import { Mic, MicOff, Send } from "lucide-react";
 import axios from "axios";
 import { UltravoxSession } from "ultravox-client";
 import { useWidgetContext } from "../constexts/WidgetContext";
+import useSessionStore from "../store/session";
+import { useUltravoxStore } from "../store/ultrasession";
 
 export function VoiceAssistant() {
-  const [isListening, setIsListening] = useState(null);
-  const [transcripts, setTranscripts] = useState(null);
-  const [status, setStatus] = useState(null);
   const [message, setMessage] = useState("");
-  const [callid, setcallid] = useState("");
-  const [callsessionid, setcallsessionid] = useState("");
 
   const { agent_id, schema } = useWidgetContext();
+  const { callId, callSessionId, setCallId, setCallSessionId } =
+    useSessionStore();
+  const {
+    setSession,
+    transcripts,
+    setTranscripts,
+    isListening,
+    setIsListening,
+    status,
+    setStatus,
+    
+  } = useUltravoxStore();
   const baseurl = "https://app.snowie.ai";
-  // const agent_id = "6a3d9ea6-cb58-461e-8996-09e7e3a28686";
-  // const schema = "0c133d26-972a-47ea-8050-51a943f2d1d0";
+  // const agent_id = "43279ed4-9039-49c8-b11b-e90f3f7c588c";
+  // const schema = "6af30ad4-a50c-4acc-8996-d5f562b6987f";
 
   const sessionRef = useRef<UltravoxSession | null>(null);
   if (!sessionRef.current) {
     sessionRef.current = new UltravoxSession();
+
+    setSession(sessionRef.current);
   }
+  // console.log(sessionRef);
 
   const session = sessionRef.current;
 
@@ -50,12 +62,12 @@ export function VoiceAssistant() {
         });
 
         const wssUrl = response.data.joinUrl;
-        setcallid(response.data.callId);
-        setcallsessionid(response.data.call_session_id);
+        setCallId(response.data.callId);
+        setCallSessionId(response.data.call_session_id);
         console.log("Mic button clicked!", wssUrl);
 
         if (wssUrl) {
-          session.joinCall(wssUrl);
+          session.joinCall(`${wssUrl}`);
         } else {
           console.error("WebSocket URL is not set");
         }
@@ -65,8 +77,8 @@ export function VoiceAssistant() {
         const response = await axios.post(
           `${baseurl}/api/end-call-session-ultravox/`,
           {
-            call_session_id: callsessionid,
-            call_id: callid,
+            call_session_id: callSessionId,
+            call_id: callId,
             schema_name: schema,
           }
         );
