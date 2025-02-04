@@ -11,8 +11,7 @@ function App() {
   const [exitConfirmed, setExitConfirmed] = useState(false);
   const { session, setTranscripts, setIsListening, status } =
     useUltravoxStore();
-  const { callId, callSessionId} =
-    useSessionStore();
+  const { callId, callSessionId } = useSessionStore();
   const baseurl = "https://app.snowie.ai";
   // const schema = "6af30ad4-a50c-4acc-8996-d5f562b6987f";
 
@@ -63,11 +62,14 @@ function App() {
   const handleConfirmExit = async () => {
     console.log(session);
     await session.leaveCall();
-    const response = await axios.post(`${baseurl}end-call-session-ultravox/`, {
-      call_session_id: callSessionId,
-      call_id: callId,
-      schema_name: schema,
-    });
+    const response = await axios.post(
+      `${baseurl}/api/end-call-session-ultravox/`,
+      {
+        call_session_id: callSessionId,
+        call_id: callId,
+        schema_name: schema,
+      }
+    );
     setTranscripts(null);
     setIsListening(false);
     setShowPopup(false);
