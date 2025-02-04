@@ -20,7 +20,6 @@ export function VoiceAssistant() {
     setIsListening,
     status,
     setStatus,
-    
   } = useUltravoxStore();
   const baseurl = "https://app.snowie.ai";
   // const agent_id = "43279ed4-9039-49c8-b11b-e90f3f7c588c";
@@ -217,6 +216,7 @@ export function VoiceAssistant() {
           <div className=" flex gap-3">
             <input
               type="text"
+              disabled={status === "disconnected" || status === "connecting"}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={(e) => {
