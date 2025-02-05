@@ -42,8 +42,8 @@ export function VoiceAssistant() {
 
   // Handle message submission
   const handleSubmit = () => {
-    console.log(status);
-    console.log(message);
+    // console.log(status);
+    // console.log(message);
 
     if (status != "disconnected") {
       session.sendText(`${message}`);
@@ -63,12 +63,12 @@ export function VoiceAssistant() {
         const wssUrl = response.data.joinUrl;
         setCallId(response.data.callId);
         setCallSessionId(response.data.call_session_id);
-        console.log("Mic button clicked!", wssUrl);
+        // console.log("Mic button clicked!", wssUrl);
 
         if (wssUrl) {
           session.joinCall(`${wssUrl}`);
         } else {
-          console.error("WebSocket URL is not set");
+          // console.error("WebSocket URL is not set");
         }
         toggleVoice(true);
       } else {
@@ -82,17 +82,17 @@ export function VoiceAssistant() {
           }
         );
 
-        console.log("Call left successfully");
+        // console.log("Call left successfully");
         setTranscripts(null);
         toggleVoice(false);
       }
     } catch (error) {
-      console.error("Error in handleMicClick:", error);
+      // console.error("Error in handleMicClick:", error);
     }
   };
 
   session.addEventListener("transcripts", (event) => {
-    console.log("Transcripts updated: ", session);
+    // console.log("Transcripts updated: ", session);
 
     const alltrans = session.transcripts;
 
@@ -112,7 +112,7 @@ export function VoiceAssistant() {
   // Listen for status changing events
   session.addEventListener("status", (event) => {
     setStatus(session.status);
-    console.log("Session status changed: ", session.status);
+    // console.log("Session status changed: ", session.status);
   });
 
   session.addEventListener("experimental_message", (msg) => {
