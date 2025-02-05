@@ -115,6 +115,10 @@ export function VoiceAssistant() {
     console.log("Session status changed: ", session.status);
   });
 
+  session.addEventListener("experimental_message", (msg) => {
+    console.log("Got a debug message: ", JSON.stringify(msg));
+  });
+
   return (
     <div className="voice-assistant">
       <div className=" voice-assistant-inner">
