@@ -58,7 +58,7 @@ export function VoiceAssistant() {
   const handleMicClick = async () => {
     try {
       if (!isListening) {
-        const response = await axios.post(`${baseurl}/api/start-ultravox/`, {
+        const response = await axios.post(`${baseurl}/api/start-thunder/`, {
           agent_code: agent_id,
           schema_name: schema,
         });
