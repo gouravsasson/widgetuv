@@ -17,14 +17,14 @@ export default defineConfig({
       fileName: 'react-widget-green-basic',
       formats: ['iife'], 
     },
-    rollupOptions: {
-      external: ['react', 'react-dom'],
-      output: {
-        globals: {
-          react: 'React',
-          'react-dom': 'ReactDOM',
-        },
-      },
-    },
+//     rollupOptions: {
+//       external: ['react', 'react-dom'],
+//       output: {
+//         globals: {
+//           react: 'React',
+//           'react-dom': 'ReactDOM',
+//         },
+//       },
+//     },
   },
 });
